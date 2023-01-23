@@ -1,2 +1,3 @@
 # Secure-Software-Development
-Group Coursework 1
+
+Secure Software Group Project
