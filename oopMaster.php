@@ -6,24 +6,25 @@ class MasterPage
 {
     private $_pages;
 
-    function __construct($_title)
+    function __construct($_title,$cssPath)
     {
         $this->_pages = new HTMLPage($_title);
+        $this->_pages->setCSSFile($cssPath);
     }
 
     public function createPage()
     {
-        $this->setMasterContent();
+        $this->masterPageContents();
         return $this->_pages->createPage();
     }
 
     public function render()
     {
-        $this->setMasterContent();
+        $this->masterPageContents();
         $this->_pages->render();
     }
 
-    private function setMasterContent()
+    private function masterPageContents()
     {
             $_masterPage = <<<MASTER
 <h1>SSD Cloud Homepage</h1>

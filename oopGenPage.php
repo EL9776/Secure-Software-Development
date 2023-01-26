@@ -5,10 +5,16 @@ class HTMLPage
 {
     private $_pageHead = "";
     private $_body = "";
+    private $_cssFile="";
 
     function __construct($_title)
     {
         $this->_pageHead = $_title;
+    }
+
+    public function setCSSFile($_cssFile)
+    {
+        $this->_cssFile = $_cssFile;
     }
 
     public function setBodyContent($_bodyContent)
@@ -37,6 +43,7 @@ HTML;
     {
         $headContent = <<<HEAD
 <head>
+    <link rel="stylesheet" href={$this->_cssFile}>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{$this->_pageHead}</title>
