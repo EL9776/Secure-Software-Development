@@ -8,14 +8,7 @@ class MasterPage
 
     function __construct($_title,$cssPath)
     {
-        $this->_pages = new HTMLPage($_title);
-        $this->_pages->setCSSFile($cssPath);
-    }
-
-    public function createPage()
-    {
-        $this->masterPageContents();
-        return $this->_pages->createPage();
+        $this->_pages = new HTMLPage($_title,$cssPath);
     }
 
     public function render()
@@ -43,14 +36,15 @@ class MasterPage
     <input type="password" placeholder="Enter Password" name="psw" required>
         
     <button type="submit">Login</button>
-    <label>
-      <input type="checkbox" checked="checked" name="remember"> Remember me
-    </label>
   </div>
 
   <div class="container" style="background-color:#f1f1f1">
     <button type="button" class="cancelbtn">Cancel</button>
     <span class="psw">Forgot <a href="#">password?</a></span>
+    
+  </div>
+  <div class="container" style="background-color:#f1f1f1">
+  <span class="signupLink"><a href="/signup.php">Signup</a></span>
   </div>
 </form>
 </div>

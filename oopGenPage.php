@@ -7,9 +7,10 @@ class HTMLPage
     private $_body = "";
     private $_cssFile="";
 
-    function __construct($_title)
+    function __construct($_title,$cssPath)
     {
         $this->_pageHead = $_title;
+        $this->setCSSFile($cssPath);
     }
 
     public function setCSSFile($_cssFile)
