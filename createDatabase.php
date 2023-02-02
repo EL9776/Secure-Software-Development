@@ -11,9 +11,29 @@ class DBConnection {
             die("The connection has failed: " . $conn -> connect_error);
         }
         echo "The database has connected successfully";
-        return $this->conn = $conn;
+        return $this -> $conn;
     }
+
+    function createDB($conn) {
+        $sql = "CREATE DATABASE cwDB";
+        if ($conn -> query($sql) === TRUE)
+        {
+            echo "The database has been successfully created.";
+        }
+        else {
+            echo "There was an error creating the database: " . $conn -> error;
+        }
+    }
+
 }
-$database = new DBConnection();
+
+
+
+
+// userID (PK), username, passwordHASH, pathToUserFiles
+
+// uploadID (PK), userID, fileName, typeOfFileUploaded
+
+
 
 ?>
