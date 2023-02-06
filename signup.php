@@ -28,11 +28,6 @@ $bodyContent=<<<BODY
 </div>
 BODY;
 
-$email = $_POST['email'];
-$password = $_POST['psw'];
-$repeat = $_POST['psw-repeat'];
-echo "email: " . $email . ", password: " . $password . "rept: " . $repeat;
-
 
 $page=new HTMLPage($title,$cssPath);
 $page->setBodyContent($bodyContent);
