@@ -16,7 +16,7 @@ class DBConnection {
 
     function createDB($conn) {
         $sql = "CREATE DATABASE cwDB";
-        if ($conn -> query($sql) === TRUE)
+        if ($conn -> query($sql) == TRUE)
         {
             echo "The database has been successfully created.";
         }
@@ -26,16 +26,19 @@ class DBConnection {
     }
 
     private function createUserTable ($conn) {
+        $tablename = "UserDetails";
         $sql = "CREATE TABLE UserDetails (
         userID int AUTO_INCREMENT,
         username varchar NOT NULL,
         passwordHash varchar NOT NULL,
         pathToUserFiles varchar NOT NULL,
         PRIMARY KEY (userID))";
+        $this->checkTableExists($conn, $tablename);
         $this->checkTableCreated($conn, $sql);
     }
 
     private function createUploadTable ($conn) {
+        $tablename = "UploadDetails";
         $sql = "CREATE TABLE UploadDetails (
         uploadID int AUTO_INCREMENT PRIMARY KEY,
         userID int NOT NULL,
@@ -44,15 +47,37 @@ class DBConnection {
         PRIMARY KEY (uploadID),
         FOREIGN KEY (userID) REFERENCES UserDetails(userID)
         )";
-        $this->checkTableCreated($conn, $sql);
+
+        $this->checkTableExists($conn,$tablename);
+        if ($this->checkTableExists($conn, $tablename) == TRUE) {
+            $this->checkTableCreated($conn, $sql);
+        }
+        else {
+            echo "There was an error while creating the database tables.";
+        }
     }
 
     function checkTableCreated ($conn, $sql) {
-        if ($conn -> query($sql) === TRUE) {
+        if ($conn -> query($sql) == TRUE) {
             echo "The database table was successfully created";
         }
         else {
             echo "There was an error creating the database table: " . $conn -> error;
+        }
+    }
+
+    function checkTableExists ($conn, $tablename) {
+        mysqli_connect($this->server_name, $this->username, $this->password);
+        mysqli_select_db("cwDB");
+        $val = mysqli_query("SELECT * FROM $this->$tablename");
+
+        if($val != FALSE) {
+            echo "The database table already exists";
+            return TRUE;
+        }
+        else {
+            echo "The database doesn't already exist: " . $conn -> error;
+            return FALSE;
         }
     }
 
