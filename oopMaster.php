@@ -20,7 +20,8 @@ class MasterPage
     private function masterPageContents()
     {
             $_masterPage = <<<MASTER
-<h1>SSD Cloud Homepage</h1>
+
+<h1>Cloud </h1>
 <div class="masterLoginForm">
 <h2>Login Form</h2>
 <form action="/validateLogin.php" method="POST">
@@ -33,22 +34,22 @@ class MasterPage
     <input type="text" placeholder="Enter Email Address" name="email" required>
 
     <label for="psw"><b>Password</b></label>
-    <input type="password" placeholder="Enter Password" name="psw" required>
+    <input type="password" placeholder="Enter Password background-colour = green"  name="psw" required>
         
     <button type="submit">Login</button>
   </div>
 
-  <div class="container" style="background-color:#f1f1f1">
+  <div class="container" style="background-color:darkorchid">
     <button type="button" class="cancelbtn">Cancel</button>
     <span class="psw">Forgot <a href="#">password?</a></span>
     
   </div>
-  <div class="container" style="background-color:#f1f1f1">
-  <span class="signupLink"><a href="/signup.php">Signup</a></span>
+  <div class="container" style="background-color:yellow">
+  <span class="signupLink"><a href="/signup.php">Sign Up</a></span>
   </div>
 </form>
 </div>
-
+</body>
 MASTER;
         $this->_pages->setBodyContent($_masterPage);
     }

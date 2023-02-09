@@ -15,4 +15,9 @@ echo "WIP"; // Need to generate UNIQUE SessionID here and go to
                 // appropriate interface DONT use rand()
                 // NEED interfacing with MySQL Backend here
                 // (Validation, data insertion, hashing of password and redirection)
+
+$email = $_POST['email'];
+$PASSWORD = $_POST['PSW'];
+
+If (strpos($email, '@'))
 ?>
