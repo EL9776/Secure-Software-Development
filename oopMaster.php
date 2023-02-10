@@ -41,7 +41,7 @@ class MasterPage
 
   <div class="container" style="background-color:darkorchid">
     <button type="button" class="cancelbtn">Cancel</button>
-    <span class="psw">Forgot <a href="#">password?</a></span>
+    <span class="psw"><a href="forgotPassword.php">Forgot password?</a></span>
     
   </div>
   <div class="container" style="background-color:yellow">
