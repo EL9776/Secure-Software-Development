@@ -12,6 +12,10 @@ if (isset($_SESSION['discard']) && $time > $_SESSION['discard']) {
 }
 $_SESSION['discard'] = $time + 3600;
 
+if (!isset($_SESSION['user'])){
+    header("Location: index.php");
+}
+
 $title="Signup Page";
 $cssPath="/resources/cloud.css";
 $bodyContent=<<<BODY

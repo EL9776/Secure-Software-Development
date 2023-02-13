@@ -9,15 +9,11 @@ if (isset($_SESSION['discard']) && $time > $_SESSION['discard']) {
 }
 $_SESSION['discard'] = $time + 3600;
 
-$_SESSION['user']=$_POST['email'];
+$_SESSION['user']=substr($_POST['email'],0,strpos($_POST['email'],"@"));
 header("Location: cloudHomepage.php");
 echo "WIP"; // Need to generate UNIQUE SessionID here and go to
                 // appropriate interface DONT use rand()
                 // NEED interfacing with MySQL Backend here
                 // (Validation, data insertion, hashing of password and redirection)
 
-$email = $_POST['email'];
-$PASSWORD = $_POST['PSW'];
-
-If (strpos($email, '@'))
 ?>

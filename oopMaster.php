@@ -21,7 +21,7 @@ class MasterPage
     {
             $_masterPage = <<<MASTER
 
-<h1>Cloud </h1>
+<h1>Cloud Login</h1>
 <div class="masterLoginForm">
 <h2>Login Form</h2>
 <form action="/validateLogin.php" method="POST">

@@ -25,27 +25,34 @@ $specialChars = preg_match('@[^\w]@', $password);
 if (strlen($email)<1 )
 {
     echo "Email length too short";
-
+    exit();
 }
-
 elseif (!strpos($email, '@'))
 {
     echo "email invalid";
+    exit();
+}
+else if (preg_match('@[^\w]@',substr($email,0,strpos($email,"@"))) || substr_count($email,"@")!=1){
+    echo "E-mail contains illegal characters";
+    exit();
 }
 
 else if(!$uppercase || !$lowercase ||!$specialChars  || !$number  || strlen($password) < 9)
 {
     echo 'Password should be at least 9 characters in length and should include at least one upper case letter, one number, and one special character.';
-
+    exit();
 }
 elseif ($password !== $repeat)
 {
     echo "passwords do not match";
+    exit();
 }
 $hash = password_hash($password, PASSWORD_DEFAULT);
 
 $_DBConnection=new DBConnection();
 $_DBConnection->masterGenerate();
+$_DBConnection->addNewUser($email,$hash,"userFiles/".substr($email,0,strpos($email,"@")));
+header("Location: index.php");
 
 
 ?>

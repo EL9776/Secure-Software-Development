@@ -68,7 +68,22 @@ class DBConnection {
 
     private function executeSQL($sql){
         $this->conn->select_db('cwDB');
-        $this->conn->query($sql);
+        $result=$this->conn->query($sql);
+        return $result;
+    }
+
+    function addNewUser($email,$passHash,$filePath){
+        $testSql="SELECT * FROM UserDetails WHERE email='$email';";
+        $result = $this->executeSQL($testSql);
+        if (mysqli_fetch_assoc($result)){
+            echo "Email in Use";
+            exit();
+        }
+        else{
+            $sql = "INSERT INTO UserDetails(email,passHash,userFilePath) VALUES ('$email','$passHash','$filePath');";
+            $this->executeSQL($sql);
+            mkdir("userFiles/".substr($email,0,strpos($email,"@")));
+        }
 
     }
 
