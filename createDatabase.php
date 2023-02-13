@@ -3,88 +3,86 @@
 // Checks that a connection can be successfully made between the server and the database.
 class DBConnection {
     private $server_name = "localhost";
-    private $username = "username";
-    private $password = "password";
+    private $username = "root";
+    private $password = "toor1234";
     function __construct() {
-        $conn = new mysqli($this->server_name, $this->username, $this->password);
-        if($conn -> connect_error) {
-            die("The connection has failed: " . $conn -> connect_error);
+        try{
+            $this->conn = new mysqli($this->server_name, $this->username, $this->password);
+            echo "The database has connected successfully<br>";
         }
-        echo "The database has connected successfully";
-        return $this -> $conn;
+        catch (mysqli_sql_exception $e){
+            echo "Problem with DB Connection";
+            exit();
+        }
+
     }
 
-    function createDB($conn) {
+    private function createDB() {
         $sql = "CREATE DATABASE cwDB";
-        if ($conn -> query($sql) == TRUE)
-        {
-            echo "The database has been successfully created.";
+        try {
+            $this->conn->query($sql);
+            echo "The database has been successfully created.<br>";
         }
-        else {
-            echo "There was an error creating the database: " . $conn -> error;
+        catch (mysqli_sql_exception $e){
+            echo "DB Exists<br>";
         }
     }
 
-    private function createUserTable ($conn) {
-        $tablename = "UserDetails";
+    private function createUserTable () {
         $sql = "CREATE TABLE UserDetails (
         userID int AUTO_INCREMENT,
-        username varchar NOT NULL,
-        passwordHash varchar NOT NULL,
-        pathToUserFiles varchar NOT NULL,
-        PRIMARY KEY (userID))";
-        $this->checkTableExists($conn, $tablename);
-        $this->checkTableCreated($conn, $sql);
+        email varchar(30) NOT NULL,
+        passHash varchar(200) NOT NULL,
+        userFilePath varchar(150) NOT NULL,
+        CONSTRAINT UserDetails_pk
+        PRIMARY KEY (userID));";
+
+        try{
+            $this->executeSQL($sql);
+        }
+        catch (mysqli_sql_exception $e){
+            echo "Table Exists<br>";
+        }
     }
 
-    private function createUploadTable ($conn) {
-        $tablename = "UploadDetails";
+    private function createUploadTable () {
         $sql = "CREATE TABLE UploadDetails (
-        uploadID int AUTO_INCREMENT PRIMARY KEY,
+        uploadID int AUTO_INCREMENT,
         userID int NOT NULL,
-        fileName varchar NOT NULL,
-        typeOfFileUploaded varchar NOT NULL,
+        fileName varchar(30) NOT NULL,
+        typeOfFileUploaded varchar(10) NOT NULL,
+        CONSTRAINT UploadDetails_pk 
         PRIMARY KEY (uploadID),
-        FOREIGN KEY (userID) REFERENCES UserDetails(userID)
-        )";
+        CONSTRAINT UploadDetails_fk
+        FOREIGN KEY (userID)
+        REFERENCES `UserDetails`(userID) ON DELETE CASCADE ON UPDATE CASCADE);";
 
-        $this->checkTableExists($conn,$tablename);
-        if ($this->checkTableExists($conn, $tablename) == TRUE) {
-            $this->checkTableCreated($conn, $sql);
+        try{
+            $this->executeSQL($sql);
         }
-        else {
-            echo "There was an error while creating the database tables.";
+        catch (mysqli_sql_exception $e){
+            echo "Table Exists<br>";
         }
+
     }
 
-    function checkTableCreated ($conn, $sql) {
-        if ($conn -> query($sql) == TRUE) {
-            echo "The database table was successfully created";
-        }
-        else {
-            echo "There was an error creating the database table: " . $conn -> error;
-        }
+    private function executeSQL($sql){
+        $this->conn->select_db('cwDB');
+        $this->conn->query($sql);
+
     }
 
-    function checkTableExists ($conn, $tablename) {
-        mysqli_connect($this->server_name, $this->username, $this->password);
-        mysqli_select_db("cwDB");
-        $val = mysqli_query("SELECT * FROM $this->$tablename");
-
-        if($val != FALSE) {
-            echo "The database table already exists";
-            return TRUE;
-        }
-        else {
-            echo "The database doesn't already exist: " . $conn -> error;
-            return FALSE;
+    function masterGenerate()
+    {
+        try {
+            $this->createDB();
+            $this->createUserTable();
+            $this->createUploadTable();
+        } catch (mysqli_sql_exception $e) {
+            echo "There was an issue with the DB Generation";
         }
     }
-
 }
-
-
-
 
 // userID (PK), username, passwordHASH, pathToUserFiles
 

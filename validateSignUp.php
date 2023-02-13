@@ -1,4 +1,17 @@
 <?php
+
+include_once('createDatabase.php');
+
+session_start();
+$time = time();
+if (isset($_SESSION['discard']) && $time > $_SESSION['discard']) {
+    session_unset();
+    session_destroy();
+    session_start();
+    header("Location: index.php");
+}
+$_SESSION['discard'] = $time + 3600;
+
 $email = $_POST['email'];
 $password = $_POST['psw'];
 $repeat = $_POST['psw-repeat'];
@@ -13,14 +26,11 @@ if (strlen($email)<1 )
 {
     echo "Email length too short";
 
-    exit();
-
 }
 
 elseif (!strpos($email, '@'))
 {
     echo "email invalid";
-    exit();
 }
 
 else if(!$uppercase || !$lowercase ||!$specialChars  || !$number  || strlen($password) < 9)
@@ -31,8 +41,11 @@ else if(!$uppercase || !$lowercase ||!$specialChars  || !$number  || strlen($pas
 elseif ($password !== $repeat)
 {
     echo "passwords do not match";
-    exit();
 }
 $hash = password_hash($password, PASSWORD_DEFAULT);
-echo $password;
+
+$_DBConnection=new DBConnection();
+$_DBConnection->masterGenerate();
+
+
 ?>

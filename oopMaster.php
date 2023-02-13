@@ -34,17 +34,17 @@ class MasterPage
     <input type="text" placeholder="Enter Email Address" name="email" required>
 
     <label for="psw"><b>Password</b></label>
-    <input type="password" placeholder="Enter Password background-colour = green"  name="psw" required>
+    <input type="password" placeholder="Enter Password" name="psw" required>
         
     <button type="submit">Login</button>
   </div>
 
-  <div class="container" style="background-color:darkorchid">
+  <div class="container">
     <button type="button" class="cancelbtn">Cancel</button>
     <span class="psw"><a href="forgotPassword.php">Forgot password?</a></span>
     
   </div>
-  <div class="container" style="background-color:yellow">
+  <div class="container">
   <span class="signupLink"><a href="/signup.php">Sign Up</a></span>
   </div>
 </form>
