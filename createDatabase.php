@@ -1,6 +1,5 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
 // Checks that a connection can be successfully made between the server and the database.
 class DBConnection {
     private $server_name = "localhost";
@@ -9,10 +8,10 @@ class DBConnection {
     function __construct() {
         try{
             $this->conn = new mysqli($this->server_name, $this->username, $this->password);
-            echo "The database has connected successfully<br>";
+//            echo "<h1>The database has connected successfully</h1><br>";
         }
         catch (mysqli_sql_exception $e){
-            echo "Problem with DB Connection";
+            echo "<h1>Problem with DB Connection</h1>";
             exit();
         }
 
@@ -22,10 +21,10 @@ class DBConnection {
         $sql = "CREATE DATABASE cwDB";
         try {
             $this->conn->query($sql);
-            echo "The database has been successfully created.<br>";
+            echo "<h1>The database has been successfully created.</h1><br>";
         }
         catch (mysqli_sql_exception $e){
-            echo "DB Exists<br>";
+//            echo "<h1>DB Exists</h1><br>";
         }
     }
 
@@ -42,7 +41,7 @@ class DBConnection {
             $this->executeSQL($sql);
         }
         catch (mysqli_sql_exception $e){
-            echo "Table Exists<br>";
+//            echo "<h1>Table Exists</h1><br>";
         }
     }
 
@@ -62,7 +61,7 @@ class DBConnection {
             $this->executeSQL($sql);
         }
         catch (mysqli_sql_exception $e){
-            echo "Table Exists<br>";
+//            echo "<h1>Table Exists</h1><br>";
         }
 
     }
@@ -77,7 +76,7 @@ class DBConnection {
         $testSql="SELECT * FROM UserDetails WHERE email='$email';";
         $result = $this->executeSQL($testSql);
         if (mysqli_fetch_assoc($result)){
-            echo "Email in Use";
+            echo "<h1>Email in Use</h1>";
             exit();
         }
         else{
@@ -94,8 +93,8 @@ class DBConnection {
             $this->createDB();
             $this->createUserTable();
             $this->createUploadTable();
-        } catch (mysqli_sql_exception $e) {
-            echo "There was an issue with the DB Generation";
+        } catch (Exception $e) {
+            echo "<h1>There was an issue with the DB Generation</h1>";
         }
     }
 

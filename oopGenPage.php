@@ -62,5 +62,20 @@ HEAD;
 BODY;
         return $htmlData;
     }
+
+    function viewUserFiles(){
+        $path = 'userFiles/'.$_SESSION['user'];
+
+        $files = array_diff(scandir($path), array('.', '..'));
+        $finalOutput=<<<FILES
+
+        FILES;
+
+        foreach($files as $file){
+            $totalpath=$path.'/'.$file;
+            $finalOutput=$finalOutput."<div class='fileOutput'><a href='{$totalpath}' target='_parent'><button class='fileOutput'>$file</button></a></div><br>";
+        }
+        return $finalOutput;
+    }
 }
 ?>

@@ -18,22 +18,27 @@ if (!isset($_SESSION['user'])){
 
 $title="Signup Page";
 $cssPath="/resources/cloud.css";
+$page=new HTMLPage($title,$cssPath);
+
 $bodyContent=<<<BODY
-<h1>Welcome {$_SESSION['user']}</h1>
+
+<div class="containerButtons">
+<h1 class="nameTitle" id="propertitle">Welcome {$_SESSION['user']}</h1>
+<div class="logprofbuttons">
+<button type="button" class="logoutbtn">Logout</button>
+<button type="button" class="profilebtn">Profile</button>
+</div>
+</div>
+
+<div class="userFiles">
+<br>
+<h2>Files:</h2>
+{$page->viewUserFiles()}
+</div>
+
 BODY;
 
-$path = 'userFiles/'.$_SESSION['user'];
-
-$files = array_diff(scandir($path), array('.', '..'));
-
-$page=new HTMLPage($title,$cssPath);
 $page->setBodyContent($bodyContent);
 $page->render();
-
-echo "<h2 class='filesTitle'>Files:</h2>";
-foreach($files as $file){
-    $totalpath=$path.'/'.$file;
-    echo "<div class='fileOutput'><a href='{$totalpath}'><b>$file</b></a></div>";
-}
 
 ?>
