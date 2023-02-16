@@ -7,7 +7,7 @@ body {
     Helvetica, sans-serif;
 }
 form {
-    border: 3px solid #f1f1f1;
+    /*border: 3px solid #f1f1f1;*/
     max-width:400px;
 }
 input[type=text], input[type=password] {
@@ -54,7 +54,7 @@ img.avatar {
 
 span.psw {
     float: right;
-    padding-top: 16px;
+    /*padding-top: 16px;*/
 }
 
 @media screen and (max-width: 300px) {
@@ -64,6 +64,7 @@ span.psw {
     }
     .cancelbtn {
         width: 100%;
+
     }
 }
 
