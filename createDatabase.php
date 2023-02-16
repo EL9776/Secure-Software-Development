@@ -1,5 +1,6 @@
 <?php
 
+use PHPUnit\Framework\TestCase;
 // Checks that a connection can be successfully made between the server and the database.
 class DBConnection {
     private $server_name = "localhost";
@@ -97,6 +98,8 @@ class DBConnection {
             echo "There was an issue with the DB Generation";
         }
     }
+
+
 }
 
 // userID (PK), username, passwordHASH, pathToUserFiles
