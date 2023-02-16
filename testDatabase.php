@@ -6,9 +6,9 @@ final class DatabaseTester extends TestCase
 {
     use TestCaseTrait;
 
-    static private $pdo = null; // for test clean-up load.
+    static private $pdo = null; // for test clean-up load
 
-    private $conn = null; // instantiate once per unit test.
+    private $conn = null; // instantiate once per unit test
 
     public function getConnection ()
     {
