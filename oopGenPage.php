@@ -73,9 +73,18 @@ BODY;
 
         foreach($files as $file){
             $totalpath=$path.'/'.$file;
-            $finalOutput=$finalOutput."<div class='fileOutput'><a href='{$totalpath}' target='_parent'><button class='fileOutput'>$file</button></a></div><br>";
+            $finalOutput=$finalOutput."<div class='fileOutput'><a href='{$totalpath}' download=''>$file</a></div><br>";
         }
         return $finalOutput;
+    }
+
+    function logoutUser(){
+        if (isset($_POST['logout'])){
+            session_unset();
+            session_destroy();
+            session_start();
+            header("Location: index.php");
+        }
     }
 }
 ?>

@@ -1,6 +1,6 @@
 <?php
 
-require_once("oopGenPage.php");
+include_once('oopGenPage.php');
 
 session_start();
 $time = time();
@@ -16,33 +16,26 @@ if (!isset($_SESSION['user'])){
     header("Location: index.php");
 }
 
-$title="Signup Page";
-$cssPath="/resources/cloud.css";
+$title="Profile";
+$cssPath="/resources/profile.css";
 $page=new HTMLPage($title,$cssPath);
 
 $bodyContent=<<<BODY
+<div class="profileTitle">
+<h1>Your Profile</h1>
 
-<div class="containerButtons">
-<h1 class="nameTitle" id="propertitle">Welcome {$_SESSION['user']}</h1>
-<div class="logprofbuttons">
-
+<div class="loghomebuttons">
 <form method="POST" action="{$page->logoutUser()}">
 <input type="submit" class="logoutbtn" name="logout" value="Logout"/>
 </form>
-
-<form method="POST" action="viewProfile.php">
-<input type="submit" class="profilebtn" name="profile" value="Profile"/>
+<form method="POST" action="cloudHomepage.php">
+<input type="submit" class="homepagebtn" name="homepage" value="Homepage"/>
 </form>
-
-</div>
-</div>
-
-<div class="userFiles">
-<br>
-<h2>Files:</h2>
-{$page->viewUserFiles()}
+<br><br>
+<h2 class="username">Mr. {$_SESSION['user']}</h2>
 </div>
 
+</div>
 BODY;
 
 $page->setBodyContent($bodyContent);

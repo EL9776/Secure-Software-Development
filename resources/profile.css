@@ -1,0 +1,20 @@
+html * {
+    font-family: Arial, sans-serif;
+}
+.profileTitle {
+    text-align: center;
+    display: inline;
+}
+.username {
+    display: inline;
+    text-align: center;
+}
+.homepagebtn {
+    display: inline;
+    float: right;
+    margin-right: 20px;
+}
+.logoutbtn {
+    display: inline;
+    float: right;
+}
