@@ -21,9 +21,8 @@ class MasterPage
     {
             $_masterPage = <<<MASTER
 
-<h1>Cloud Login</h1>
+<h1>SSD Cloud Login</h1>
 <div class="masterLoginForm">
-<h2>Login Form</h2>
 <form action="/validateLogin.php" method="POST">
   <div class="imgcontainer">
     <img src="resources/avatar.png" alt="Avatar" class="avatar">
@@ -40,13 +39,10 @@ class MasterPage
   </div>
 
   <div class="container">
-    <button type="button" class="cancelbtn">Cancel</button>
-    <span class="psw"><a href="forgotPassword.php">Forgot password?</a></span>
-    
-  </div>
-  <div class="container">
+  <span class="psw"><a href="forgotPassword.php">Forgot password?</a></span>
   <span class="signupLink"><a href="/signup.php">Sign Up</a></span>
   </div>
+
 </form>
 </div>
 </body>
