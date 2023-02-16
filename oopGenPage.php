@@ -70,7 +70,6 @@ BODY;
         $finalOutput=<<<FILES
 
         FILES;
-
         foreach($files as $file){
             $totalpath=$path.'/'.$file;
             $finalOutput=$finalOutput."<div class='fileOutput'><a href='{$totalpath}' download=''>$file</a></div><br>";
