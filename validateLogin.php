@@ -13,7 +13,7 @@ $_SESSION['discard'] = $time + 3600;
 $_SESSION['user']=substr($_POST['email'],0,strpos($_POST['email'],"@"));
 
 //echo "WIP";   // NEED interfacing with MySQL Backend here
-                // (Validation, data insertion, hashing of password and redirection)
+// (Validation, data insertion, hashing of password and redirection)
 $email = $_POST['email'];
 $password = $_POST['psw'];
 
@@ -30,5 +30,27 @@ elseif (!strpos($email, '@'))
     echo "Email syntax invalid";
     exit();
 }
+$dbcreds = new mysqli("localhost", "root", "Bigbrother1");
+if($stmt = $dbcreds -> prepare("SELECT 'id', 'password' FROM 'users' WHERE BINARY 'email' = ? LIMIT 1"))
+{
+    $stmt  -> bind_param("s", $email);
+    $stmt -> execute();
+    $stmt -> bind_result($uid, $uhash);
+    $stmt -> store_result();
 
+    while($stmt -> fetch())
+    {
+        if(password_verify($password, $uhash))
+        {
+            session_start();
+            $_SESSION['uemail'] = $email;
+            $_SESSION['uid'] = $uid;
+            echo  "Logged in succesfully - Sessrion started for user ID: " . $uid;
+        }
+        else{
+            echo "Wrong password";
+        }
+    }
+    $stmt -> close();
+}
 ?>
