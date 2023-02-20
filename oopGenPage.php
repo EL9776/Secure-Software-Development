@@ -1,7 +1,7 @@
 <?php
 
 
-class HTMLPage
+#[AllowDynamicProperties] class HTMLPage
 {
     private $_pageHead = "";
     private $_body = "";
@@ -98,7 +98,7 @@ BODY;
             if (file_exists($this->targetFile)) {
                 $this->check=0;
             }
-            if ($_FILES["fileUpload"]["size"] > 500000) {
+            if ($_FILES["fileUpload"]["size"] > 5000000) {
                 $this->check=0;
             }
             if ($this->check==0){

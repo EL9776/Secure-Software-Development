@@ -1,10 +1,10 @@
 <?php
 
 // Checks that a connection can be successfully made between the server and the database.
-class DBConnection {
+#[AllowDynamicProperties] class DBConnection {
     private $server_name = "localhost";
     private $username = "root";
-    private $password = "toor1234";
+    private $password = "Bigbrother1";
     function __construct() {
         try{
             $this->conn = new mysqli($this->server_name, $this->username, $this->password);

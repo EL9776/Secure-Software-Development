@@ -37,7 +37,7 @@ $bodyContent=<<<BODY
 <form action="{$page->userUploadFile()}" method="POST" enctype="multipart/form-data">
   <b>Select file to upload</b>
   <input type="file" name="fileUpload" id="fileUpload">
-  <input type="submit" value="Upload Image" name="submit">
+  <input type="submit" value="Upload File" name="submit">
 </form>
 
 <h5>{$page->fileError}</h5>

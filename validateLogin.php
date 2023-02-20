@@ -31,8 +31,10 @@ elseif (!strpos($email, '@'))
     exit();
 }
 $dbcreds = new mysqli("localhost", "root", "Bigbrother1");
-if($stmt = $dbcreds -> prepare("SELECT 'id', 'password' FROM 'users' WHERE BINARY 'email' = ? LIMIT 1"))
+$dbcreds-> select_db('cwDB');
+if($stmt = $dbcreds -> prepare("SELECT `email`, `passHash` FROM `UserDetails` WHERE BINARY `email` = ? LIMIT 1"))
 {
+
     $stmt  -> bind_param("s", $email);
     $stmt -> execute();
     $stmt -> bind_result($uid, $uhash);
@@ -42,13 +44,12 @@ if($stmt = $dbcreds -> prepare("SELECT 'id', 'password' FROM 'users' WHERE BINAR
     {
         if(password_verify($password, $uhash))
         {
-            session_start();
             $_SESSION['uemail'] = $email;
             $_SESSION['uid'] = $uid;
-            echo  "Logged in succesfully - Sessrion started for user ID: " . $uid;
+            Header("Location: cloudHomepage.php");
         }
         else{
-            echo "Wrong password";
+            echo "Wrong Email or password";
         }
     }
     $stmt -> close();
