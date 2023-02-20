@@ -33,6 +33,14 @@ $bodyContent=<<<BODY
 <form method="POST" action="viewProfile.php">
 <input type="submit" class="profilebtn" name="profile" value="Profile"/>
 </form>
+<br><br>
+<form action="{$page->userUploadFile()}" method="POST" enctype="multipart/form-data">
+  <b>Select file to upload</b>
+  <input type="file" name="fileUpload" id="fileUpload">
+  <input type="submit" value="Upload Image" name="submit">
+</form>
+
+<h5>{$page->fileError}</h5>
 
 </div>
 </div>

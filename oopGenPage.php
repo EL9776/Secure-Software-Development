@@ -6,6 +6,7 @@ class HTMLPage
     private $_pageHead = "";
     private $_body = "";
     private $_cssFile="";
+    public $fileError="";
 
     function __construct($_title,$cssPath)
     {
@@ -64,15 +65,18 @@ BODY;
     }
 
     function viewUserFiles(){
-        $path = 'userFiles/'.$_SESSION['user'];
+        $finalOutput="";
+        if (isset($_SESSION['user'])){
+            $path = 'userFiles/'.$_SESSION['user'];
 
-        $files = array_diff(scandir($path), array('.', '..'));
-        $finalOutput=<<<FILES
+            $files = array_diff(scandir($path), array('.', '..'));
+            $finalOutput=<<<FILES
 
         FILES;
-        foreach($files as $file){
-            $totalpath=$path.'/'.$file;
-            $finalOutput=$finalOutput."<div class='fileOutput'><a href='{$totalpath}' download=''>$file</a></div><br>";
+            foreach($files as $file){
+                $totalpath=$path.'/'.$file;
+                $finalOutput=$finalOutput."<div class='fileOutput'><a href='{$totalpath}' download=''>$file</a></div><br>";
+            }
         }
         return $finalOutput;
     }
@@ -84,6 +88,32 @@ BODY;
             session_start();
             header("Location: index.php");
         }
+    }
+
+    function userUploadFile(){
+        if (isset($_POST['submit'])){
+            $this->path = 'userFiles/'.$_SESSION['user'].'/';
+            $this->targetFile = $this->path.basename($_FILES["fileUpload"]["name"]);
+            $this->check=1;
+            if (file_exists($this->targetFile)) {
+                $this->check=0;
+            }
+            if ($_FILES["fileUpload"]["size"] > 500000) {
+                $this->check=0;
+            }
+            if ($this->check==0){
+                $this->fileError ="File was not uploaded.";
+            }
+            else{
+                if (move_uploaded_file($_FILES["fileUpload"]["tmp_name"], $this->targetFile)) {
+                    $this->fileError=htmlspecialchars(basename($_FILES["fileUpload"]["name"])). " has been uploaded.";
+                }
+                else{
+                    $this->fileError="There was an error uploading your file.";
+                }
+            }
+        }
+
     }
 }
 ?>
