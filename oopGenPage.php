@@ -1,7 +1,7 @@
 <?php
 
 
-#[AllowDynamicProperties] class HTMLPage
+class HTMLPage
 {
     private $_pageHead = "";
     private $_body = "";
@@ -49,6 +49,7 @@ HTML;
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{$this->_pageHead}</title>
+    <link rel="icon" type="image/x-icon" href="/resources/lock.png">
 </head>
 HEAD;
         return $headContent;
@@ -114,6 +115,47 @@ BODY;
             }
         }
 
+    }
+
+    function validateEmail($email){
+
+        if (strlen($email)<1 )
+        {
+            echo "Email length too short";
+            exit();
+        }
+        else if (strlen($email)>100){
+            echo "Email length too long";
+            exit();
+        }
+        else if (!strpos($email, '@'))
+        {
+            echo "email invalid";
+            exit();
+        }
+        else if (preg_match('@[^\w]@',substr($email,0,strpos($email,"@"))) || substr_count($email,"@")!=1){
+            echo "E-mail contains illegal characters";
+            exit();
+        }
+    }
+
+    function validatePassword($password,$repeat){
+        // Validate password strength
+        $uppercase = preg_match('@[A-Z]@', $password);
+        $lowercase = preg_match('@[a-z]@', $password);
+        $number    = preg_match('@[0-9]@', $password);
+        $specialChars = preg_match('@[^\w]@', $password);
+
+        if(!$uppercase || !$lowercase ||!$specialChars  || !$number  || strlen($password) < 9)
+        {
+            echo 'Password should be at least 9 characters in length and should include at least one upper case letter, one number, and one special character.';
+            exit();
+        }
+        elseif ($password !== $repeat)
+        {
+            echo "passwords do not match";
+            exit();
+        }
     }
 }
 ?>

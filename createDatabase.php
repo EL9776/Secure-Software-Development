@@ -1,10 +1,10 @@
 <?php
 
 // Checks that a connection can be successfully made between the server and the database.
-#[AllowDynamicProperties] class DBConnection {
+class DBConnection {
     private $server_name = "localhost";
     private $username = "root";
-    private $password = "Bigbrother1";
+    private $password = "toor1234";
     function __construct() {
         try{
             $this->conn = new mysqli($this->server_name, $this->username, $this->password);
@@ -71,6 +71,30 @@
         $result=$this->conn->query($sql);
         return $result;
     }
+
+    function checkDBForAccount($email,$password){
+        $this->conn-> select_db('cwDB');
+        if($stmt = $this->conn -> prepare("SELECT `email`, `passHash` FROM `UserDetails` WHERE BINARY `email` = ? LIMIT 1"))
+        {
+            $stmt  -> bind_param("s", $email);
+            $stmt -> execute();
+            $stmt -> bind_result($uid, $uhash);
+            $stmt -> store_result();
+
+            while($stmt -> fetch())
+            {
+                if(password_verify($password, $uhash))
+                {
+                    $_SESSION['uemail'] = $email;
+                    $_SESSION['uid'] = $uid;
+                    $_SESSION['user']=substr($email,0,strpos($email,"@"));
+                    Header("Location: cloudHomepage.php");
+                }
+            }
+            $stmt -> close();
+            echo "Wrong Email or password";
+        }
+}
 
     function addNewUser($email,$passHash,$filePath){
         $testSql="SELECT * FROM UserDetails WHERE email='$email';";
