@@ -133,7 +133,8 @@ BODY;
             echo "email invalid";
             exit();
         }
-        else if (preg_match('@[^\w]@',substr($email,0,strpos($email,"@"))) || substr_count($email,"@")!=1){
+        else if (preg_match('@[^\w]@',substr($email,0,strpos($email,"@")))
+            || (substr_count($email,"@")!=1) || (strpos($email,"'")) || (strpos($email,'"'))){
             echo "E-mail contains illegal characters";
             exit();
         }

@@ -100,7 +100,7 @@ class DBConnection {
         $testSql="SELECT * FROM UserDetails WHERE email='$email';";
         $result = $this->executeSQL($testSql);
         if (mysqli_fetch_assoc($result)){
-            echo "<h1>Email in Use</h1>";
+            echo "<h1>Account already exists</h1>";
             exit();
         }
         else{
