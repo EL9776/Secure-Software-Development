@@ -117,8 +117,24 @@ class DBConnection {
             $this->createDB();
             $this->createUserTable();
             $this->createUploadTable();
+            $this->passwordResetTable();
         } catch (Exception $e) {
             echo "<h1>There was an issue with the DB Generation</h1>";
+        }
+    }
+    private function passwordResetTable () {
+        $sql = "CREATE TABLE passwordReset(
+            passwordResetID int(11) PRIMARY KEY AUTO_INCREMENT NOT NULL,
+            passwordResetEmail TEXT NOT NULL,
+            passwordResetSelector TEXT NOT NULL,
+            passwordResetToken LONGTEXT NOT NULL,
+            passwordResetExpires TEXT NOT NULL,
+) ";
+        try{
+            $this->executeSQL($sql);
+        }
+        catch (mysqli_sql_exception $e){
+//            echo "<h1>Table Exists</h1><br>";
         }
     }
 
