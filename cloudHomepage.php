@@ -23,9 +23,11 @@ $page=new HTMLPage($title,$cssPath);
 $bodyContent=<<<BODY
 
 <div class="containerButtons">
+<div class="topRowUser">
+{$page->userProfileIcon()}
 <h1 class="nameTitle" id="propertitle">Welcome {$_SESSION['user']}</h1>
+</div>
 <div class="logprofbuttons">
-
 <form method="POST" action="{$page->logoutUser()}">
 <input type="submit" class="logoutbtn" name="logout" value="Logout"/>
 </form>

@@ -32,9 +32,18 @@ $bodyContent=<<<BODY
 <input type="submit" class="homepagebtn" name="homepage" value="Homepage"/>
 </form>
 <br><br>
-<h2 class="username">Mr. {$_SESSION['user']}</h2>
+<h2 class="username">{$_SESSION['user']}'s Profile</h2>
 </div>
-
+</div>
+{$page->userProfileIcon()}
+<div class="changeProfile">
+<form action="{$page->userUploadFile(1)}" method="POST" enctype="multipart/form-data">
+  <b>Change Profile Picture</b><br>
+  <input type="file" name="fileUpload" id="fileUpload">
+  <br>
+  <input type="submit" value="Upload Photo" name="submit">
+</form>
+<h5>{$page->fileError}</h5>
 </div>
 BODY;
 

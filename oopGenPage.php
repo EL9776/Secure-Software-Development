@@ -70,7 +70,7 @@ BODY;
         if (isset($_SESSION['user'])){
             $path = 'userFiles/'.$_SESSION['user'];
 
-            $files = array_diff(scandir($path), array('.', '..'));
+            $files = array_diff(scandir($path), array('.', '..','profile.png'));
             $finalOutput=<<<FILES
 
         FILES;
@@ -91,30 +91,41 @@ BODY;
         }
     }
 
-    function userUploadFile(){
+    function userUploadFile($profileUploadCheck=0){
+        $this->profileUploadCheck=$profileUploadCheck;
         if (isset($_POST['submit'])){
             $this->path = 'userFiles/'.$_SESSION['user'].'/';
             $this->targetFile = $this->path.basename($_FILES["fileUpload"]["name"]);
             $this->check=1;
-            if (file_exists($this->targetFile)) {
+            if (file_exists($this->targetFile) && $profileUploadCheck==0) {
                 $this->check=0;
             }
             if ($_FILES["fileUpload"]["size"] > 5000000) {
+                $this->check=0;
+            }
+            if ($this->profileUploadCheck==0 && $_FILES["fileUpload"]["name"]=="profile.png"){
                 $this->check=0;
             }
             if ($this->check==0){
                 $this->fileError ="File was not uploaded.";
             }
             else{
-                if (move_uploaded_file($_FILES["fileUpload"]["tmp_name"], $this->targetFile)) {
-                    $this->fileError=htmlspecialchars(basename($_FILES["fileUpload"]["name"])). " has been uploaded.";
+                if ($this->profileUploadCheck==0) {
+                    if (move_uploaded_file($_FILES["fileUpload"]["tmp_name"], $this->targetFile)){
+                        $this->fileError=htmlspecialchars(basename($_FILES["fileUpload"]["name"])). " has been uploaded.";
+                    }
                 }
-                else{
+                else if ($this->profileUploadCheck==1) {
+                    if (move_uploaded_file($_FILES["fileUpload"]["tmp_name"], $this->path.basename('profile.png'))){
+                        $this->fileError=htmlspecialchars(basename('profile.png')). " has been uploaded.";
+                        header("Location: viewProfile.php");
+                    }
+                }
+                else {
                     $this->fileError="There was an error uploading your file.";
                 }
             }
         }
-
     }
 
     function validateEmail($email){
@@ -157,6 +168,26 @@ BODY;
             echo "passwords do not match";
             exit();
         }
+    }
+
+    function userProfileIcon(){
+        $this->checkPath=$_SERVER['DOCUMENT_ROOT']."/userFiles/".$_SESSION['user']."/profile.png";
+        if (file_exists($this->checkPath)){
+            $this->avatarFile="/userFiles/".$_SESSION['user']."/profile.png";
+            $profileOutput=<<<PROFILE
+<div class="imgcontainer">
+    <img src="{$this->avatarFile}" alt="Avatar" class="avatar">
+  </div>
+PROFILE;
+        }
+        else{
+            $profileOutput=<<<PROFILE
+<div class="imgcontainer">
+    <img src="resources/avatar.png" alt="Avatar" class="avatar">
+  </div>
+PROFILE;
+        }
+        return $profileOutput;
     }
 }
 ?>
