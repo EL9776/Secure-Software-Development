@@ -1,5 +1,6 @@
 <?php
 
+require_once('createDatabase.php');
 
 class HTMLPage
 {
@@ -7,11 +8,13 @@ class HTMLPage
     private $_body = "";
     private $_cssFile="";
     public $fileError="";
+    private $dynamicStats=0;
 
     function __construct($_title,$cssPath)
     {
         $this->_pageHead = $_title;
         $this->setCSSFile($cssPath);
+        $this->dBObj=new DBConnection();
     }
 
     public function setCSSFile($_cssFile)
@@ -103,6 +106,9 @@ BODY;
             if ($_FILES["fileUpload"]["size"] > 5000000) {
                 $this->check=0;
             }
+            if (strlen($_FILES["fileUpload"]["name"])>35){
+                $this->check=0;
+            }
             if ($this->profileUploadCheck==0 && $_FILES["fileUpload"]["name"]=="profile.png"){
                 $this->check=0;
             }
@@ -113,6 +119,7 @@ BODY;
                 if ($this->profileUploadCheck==0) {
                     if (move_uploaded_file($_FILES["fileUpload"]["tmp_name"], $this->targetFile)){
                         $this->fileError=htmlspecialchars(basename($_FILES["fileUpload"]["name"])). " has been uploaded.";
+                        $this->dBObj->uploadedFile($_FILES["fileUpload"]["name"]);
                     }
                 }
                 else if ($this->profileUploadCheck==1) {
@@ -149,6 +156,11 @@ BODY;
             echo "E-mail contains illegal characters";
             exit();
         }
+    }
+
+    function dynamicUserStats(){
+        $this->dynamicStats=$this->dBObj->getDynamicUserStats();
+        return $this->dynamicStats;
     }
 
     function validatePassword($password,$repeat){

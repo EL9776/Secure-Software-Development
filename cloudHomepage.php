@@ -54,7 +54,6 @@ $bodyContent=<<<BODY
 </div>
 
 BODY;
-
 $page->setBodyContent($bodyContent);
 $page->render();
 

@@ -31,8 +31,8 @@ class DBConnection {
     private function createUserTable () {
         $sql = "CREATE TABLE UserDetails (
         userID int AUTO_INCREMENT,
-        email varchar(30) NOT NULL,
-        passHash varchar(200) NOT NULL,
+        email varchar(80) NOT NULL,
+        passHash varchar(256) NOT NULL,
         userFilePath varchar(150) NOT NULL,
         CONSTRAINT UserDetails_pk
         PRIMARY KEY (userID));";
@@ -49,8 +49,7 @@ class DBConnection {
         $sql = "CREATE TABLE UploadDetails (
         uploadID int AUTO_INCREMENT,
         userID int NOT NULL,
-        fileName varchar(30) NOT NULL,
-        typeOfFileUploaded varchar(10) NOT NULL,
+        fileName varchar(40) NOT NULL,
         CONSTRAINT UploadDetails_pk 
         PRIMARY KEY (uploadID),
         CONSTRAINT UploadDetails_fk
@@ -74,11 +73,11 @@ class DBConnection {
 
     function checkDBForAccount($email,$password){
         $this->conn-> select_db('cwDB');
-        if($stmt = $this->conn -> prepare("SELECT `email`, `passHash` FROM `UserDetails` WHERE BINARY `email` = ? LIMIT 1"))
+        if($stmt = $this->conn -> prepare("SELECT `email`,`UserID`, `passHash` FROM `UserDetails` WHERE BINARY `email` = ? LIMIT 1"))
         {
             $stmt  -> bind_param("s", $email);
             $stmt -> execute();
-            $stmt -> bind_result($uid, $uhash);
+            $stmt -> bind_result($uemail,$uid, $uhash);
             $stmt -> store_result();
 
             while($stmt -> fetch())
@@ -111,6 +110,27 @@ class DBConnection {
 
     }
 
+    function uploadedFile($filename){
+        $executableSql="INSERT INTO UploadDetails(userID,filename) VALUES ('{$_SESSION['uid']}','{$filename}')";
+        try {
+            $this->result=$this->executeSQL($executableSql);
+        }
+        catch (mysqli_sql_exception $e){
+        }
+    }
+
+    function getDynamicUserStats(){
+        $executableSql="SELECT `filename` FROM UploadDetails WHERE userID={$_SESSION['uid']}";
+        try{
+            $this->result=$this->executeSQL($executableSql);
+            $this->result=mysqli_num_rows($this->result);
+            return $this->result;
+        }
+        catch (mysqli_sql_exception $e){
+
+        }
+    }
+
     function masterGenerate()
     {
         try {
@@ -127,7 +147,7 @@ class DBConnection {
 
 // userID (PK), username, passwordHASH, pathToUserFiles
 
-// uploadID (PK), userID, fileName, typeOfFileUploaded
+// uploadID (PK), userID, fileName
 
 
 

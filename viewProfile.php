@@ -36,6 +36,9 @@ $bodyContent=<<<BODY
 </div>
 </div>
 {$page->userProfileIcon()}
+<div class="dynamicContent">
+<h4>You Have Uploaded {$page->dynamicUserStats()} Files</h4>
+</div>
 <div class="changeProfile">
 <form action="{$page->userUploadFile(1)}" method="POST" enctype="multipart/form-data">
   <b>Change Profile Picture</b><br>
