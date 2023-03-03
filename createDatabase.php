@@ -4,7 +4,7 @@
 class DBConnection {
     private $server_name = "localhost";
     private $username = "root";
-    private $password = "toor1234";
+    private $password = "root1234";
     function __construct() {
         try{
             $this->conn = new mysqli($this->server_name, $this->username, $this->password);
@@ -14,14 +14,13 @@ class DBConnection {
             echo "<h1>Problem with DB Connection</h1>";
             exit();
         }
-
     }
 
     private function createDB() {
         $sql = "CREATE DATABASE cwDB";
         try {
             $this->conn->query($sql);
-            echo "<h1>The database has been successfully created.</h1><br>";
+//            echo "<h1>The database has been successfully created.</h1><br>";
         }
         catch (mysqli_sql_exception $e){
 //            echo "<h1>DB Exists</h1><br>";
@@ -123,13 +122,14 @@ class DBConnection {
         }
     }
     private function passwordResetTable () {
-        $sql = "CREATE TABLE passwordReset(
-            passwordResetID int(11) PRIMARY KEY AUTO_INCREMENT NOT NULL,
-            passwordResetEmail TEXT NOT NULL,
-            passwordResetSelector TEXT NOT NULL,
-            passwordResetToken LONGTEXT NOT NULL,
-            passwordResetExpires TEXT NOT NULL,
-) ";
+        $sql = "CREATE TABLE passwordReset (
+                passwordResetID INT(25) AUTO_INCREMENT NOT NULL,
+                passwordResetEmail VARCHAR(80) NOT NULL,
+                passwordResetSelector VARCHAR(256) NOT NULL,
+                passwordResetToken VARCHAR(256) NOT NULL,
+                passwordResetExpires VARCHAR(80) NOT NULL,
+                CONSTRAINT passwordReset_pk
+                PRIMARY KEY (passwordResetID));";
         try{
             $this->executeSQL($sql);
         }
