@@ -8,7 +8,7 @@ if (isset($_SESSION['discard']) && $time > $_SESSION['discard']) {
     session_unset();
     session_destroy();
     session_start();
-    header("Location: index.php");
+    header("Location: index.php?success=timeout");
 }
 $_SESSION['discard'] = $time + 3600;
 

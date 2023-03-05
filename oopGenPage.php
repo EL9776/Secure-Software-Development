@@ -90,7 +90,7 @@ BODY;
             session_unset();
             session_destroy();
             session_start();
-            header("Location: index.php");
+            header("Location: index.php?success=logout");
         }
     }
 
@@ -139,21 +139,21 @@ BODY;
 
         if (strlen($email)<1 )
         {
-            echo "Email length too short";
+            echo "<h1 style='color: green; text-align:center'>Email length too short</h1>";
             exit();
         }
         else if (strlen($email)>100){
-            echo "Email length too long";
+            echo "<h1 style='color: green; text-align:center'>Email length too long</h1>";
             exit();
         }
         else if (!strpos($email, '@'))
         {
-            echo "email invalid";
+            echo "<h1 style='color: green; text-align:center'>Email Invalid</h1>";
             exit();
         }
         else if (preg_match('@[^\w]@',substr($email,0,strpos($email,"@")))
             || (substr_count($email,"@")!=1) || (strpos($email,"'")) || (strpos($email,'"'))){
-            echo "E-mail contains illegal characters";
+            echo "<h1 style='color: green; text-align:center'>E-mail contains illegal characters</h1>";
             exit();
         }
     }
@@ -172,12 +172,12 @@ BODY;
 
         if(!$uppercase || !$lowercase ||!$specialChars  || !$number  || strlen($password) < 9)
         {
-            echo 'Password should be at least 9 characters in length and should include at least one upper case letter, one number, and one special character.';
+            echo "<h1 style='color: green; text-align:center'>Password should be at least 9 characters in length and should include at least one upper case letter, one number, and one special character.</h1>";
             exit();
         }
         elseif ($password !== $repeat)
         {
-            echo "passwords do not match";
+            echo "<h1 style='color: green; text-align:center'>Passwords do not match</h1>";
             exit();
         }
     }

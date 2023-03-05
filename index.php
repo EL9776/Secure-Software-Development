@@ -9,7 +9,7 @@ if (isset($_SESSION['discard']) && $time > $_SESSION['discard']) {
     session_unset();
     session_destroy();
     session_start();
-    header("Location: index.php");
+    header("Location: index.php?success=timeout");
 }
 $_SESSION['discard'] = $time + 3600;
 
@@ -48,6 +48,21 @@ $page->setBodyContent($bodyContent);
 
 $_DBConnection=new DBConnection();
 $_DBConnection->masterGenerate();
+
+if (isset($_GET['success'])){
+    if ($_GET['success']=="true"){
+        echo "<h3 style='color: green; text-align:center'>Password Successfully Reset!</h3>";
+    }
+    else if ($_GET['success']=="created"){
+        echo "<h3 style='color: green; text-align:center'>Account Successfully Created!</h3>";
+    }
+    else if ($_GET['success']=="logout"){
+        echo "<h3 style='color: green; text-align:center'>Successfully Logged Out!</h3>";
+    }
+    else if ($_GET['success']=="timeout"){
+        echo "<h3 style='color: green; text-align:center'>Session Timed Out!</h3>";
+    }
+}
 
 $page->render();
 
