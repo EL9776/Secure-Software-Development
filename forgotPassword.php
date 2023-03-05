@@ -1,6 +1,16 @@
 <?php
 
-require("oopGenPage.php");
+require_once("oopGenPage.php");
+
+session_start();
+$time = time();
+if (isset($_SESSION['discard']) && $time > $_SESSION['discard']) {
+    session_unset();
+    session_destroy();
+    session_start();
+    header("Location: index.php");
+}
+$_SESSION['discard'] = $time + 3600;
 
 $title="Forgot Password Page";
 $cssPath="resources/forgotPassword.css";

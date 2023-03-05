@@ -6,25 +6,16 @@ class DBConnection {
     private $username = "root";
     private $password = "root1234";
     function __construct() {
-        try{
-            $this->conn = new mysqli($this->server_name, $this->username, $this->password);
-//            echo "<h1>The database has connected successfully</h1><br>";
-        }
-        catch (mysqli_sql_exception $e){
+        $this->conn = new mysqli($this->server_name, $this->username, $this->password);
+        if ($this->conn->connect_error){
             echo "<h1>Problem with DB Connection</h1>";
             exit();
         }
-    }
-
-    private function createDB() {
-        $sql = "CREATE DATABASE cwDB";
-        try {
-            $this->conn->query($sql);
-//            echo "<h1>The database has been successfully created.</h1><br>";
+        if ($stmt=$this->conn->prepare("CREATE DATABASE cwDB;")){
+            $stmt->execute();
+            $stmt->close();
         }
-        catch (mysqli_sql_exception $e){
-//            echo "<h1>DB Exists</h1><br>";
-        }
+        $this->conn->select_db("cwDB");
     }
 
     private function createUserTable () {
@@ -35,12 +26,9 @@ class DBConnection {
         userFilePath varchar(150) NOT NULL,
         CONSTRAINT UserDetails_pk
         PRIMARY KEY (userID));";
-
-        try{
-            $this->executeSQL($sql);
-        }
-        catch (mysqli_sql_exception $e){
-//            echo "<h1>Table Exists</h1><br>";
+        if ($stmt=$this->conn->prepare($sql)){
+            $stmt->execute();
+            $stmt->close();
         }
     }
 
@@ -56,24 +44,16 @@ class DBConnection {
         FOREIGN KEY (userID)
         REFERENCES `UserDetails`(userID) ON DELETE CASCADE ON UPDATE CASCADE);";
 
-        try{
-            $this->executeSQL($sql);
-        }
-        catch (mysqli_sql_exception $e){
-//            echo "<h1>Table Exists</h1><br>";
+        if ($stmt=$this->conn->prepare($sql)){
+            $stmt->execute();
+            $stmt->close();
         }
 
-    }
-
-    private function executeSQL($sql){
-        $this->conn->select_db('cwDB');
-        $result=$this->conn->query($sql);
-        return $result;
     }
 
     function checkDBForAccount($email,$password){
         $this->conn-> select_db('cwDB');
-        if($stmt = $this->conn -> prepare("SELECT `email`, `passHash` FROM `UserDetails` WHERE BINARY `email` = ? LIMIT 1"))
+        if($stmt = $this->conn -> prepare("SELECT `email`, `passHash` FROM `UserDetails` WHERE BINARY `email` = ? LIMIT 1;"))
         {
             $stmt  -> bind_param("s", $email);
             $stmt -> execute();
@@ -96,24 +76,27 @@ class DBConnection {
 }
 
     function addNewUser($email,$passHash,$filePath){
-        $testSql="SELECT * FROM UserDetails WHERE email='$email';";
-        $result = $this->executeSQL($testSql);
+        $this->checkExists=1;
+        $testSql="SELECT `email` FROM UserDetails WHERE email='$email';";
+
+        $result=$this->conn->query($testSql);
         if (mysqli_fetch_assoc($result)){
             echo "<h1>Account already exists</h1>";
             exit();
         }
         else{
             $sql = "INSERT INTO UserDetails(email,passHash,userFilePath) VALUES ('$email','$passHash','$filePath');";
-            $this->executeSQL($sql);
-            mkdir("userFiles/".substr($email,0,strpos($email,"@")));
+            if ($stmt=$this->conn->prepare($sql)){
+                $stmt->execute();
+            }
+            $stmt->close();
+            mkdir("userFiles/".substr($email,0,strpos($email,"@")),0777,true);
         }
-
     }
 
     function masterGenerate()
     {
         try {
-            $this->createDB();
             $this->createUserTable();
             $this->createUploadTable();
             $this->passwordResetTable();
@@ -130,15 +113,88 @@ class DBConnection {
                 passwordResetExpires VARCHAR(80) NOT NULL,
                 CONSTRAINT passwordReset_pk
                 PRIMARY KEY (passwordResetID));";
-        try{
-            $this->executeSQL($sql);
-        }
-        catch (mysqli_sql_exception $e){
-//            echo "<h1>Table Exists</h1><br>";
+        if ($stmt=$this->conn->prepare($sql)){
+            $stmt->execute();
+            $stmt->close();
         }
     }
 
+    function resetRequest($selector,$token,$expires,$userEmail){
 
+        $sql = "DELETE FROM passwordReset WHERE passwordResetEmail=?;";
+
+        if (!$stmt=$this->conn->prepare($sql)){
+            echo "Error";
+            exit();
+        }
+        else{
+            $stmt->bind_param("s",$userEmail);
+            $stmt->execute();
+        }
+
+        $sql2 = "INSERT INTO passwordReset (passwordResetEmail, passwordResetSelector, passwordResetToken, passwordResetExpires) VALUES (?,?,?,?);";
+
+        if (!$stmt=$this->conn->prepare($sql2)){
+            echo "error";
+            exit();
+        }
+        else {
+            $hashedToken = password_hash($token, PASSWORD_DEFAULT);
+            $stmt->bind_param("ssss",$userEmail, $selector, $hashedToken, $expires);
+            $stmt->execute();
+        }
+        $stmt->close();
+    }
+
+    function validatePassword($password,$repeat){
+        // Validate password strength
+        $uppercase = preg_match('@[A-Z]@', $password);
+        $lowercase = preg_match('@[a-z]@', $password);
+        $number    = preg_match('@[0-9]@', $password);
+        $specialChars = preg_match('@[^\w]@', $password);
+
+        if(!$uppercase || !$lowercase ||!$specialChars  || !$number  || strlen($password) < 9)
+        {
+            echo 'Password should be at least 9 characters in length and should include at least one upper case letter, one number, and one special character.';
+            exit();
+        }
+        elseif ($password !== $repeat)
+        {
+            echo "passwords do not match";
+            exit();
+        }
+    }
+
+    function retreivePassRequest($selector,$validator){
+        if (isset($_POST['submitNewPassword'])){
+
+            $sql="SELECT UserDetails.`email`,`passwordResetSelector`,`passwordResetToken`,`passwordResetExpires`
+    FROM PasswordReset,UserDetails WHERE UserDetails.`email`=`passwordResetEmail`;";
+            if ($stmt=$this->conn->prepare($sql)){
+                $stmt->execute();
+                $stmt->bind_result($retEmail,$selectorCheck,$tokenCheck,$expireCheck);
+                $stmt->store_result();
+                while ($stmt->fetch()) {
+                    if (($selectorCheck == $selector) && (password_verify(hex2bin($validator),$tokenCheck)==1) && ($expireCheck > time())) {
+                        $this->validatePassword($_POST['newPassword'], $_POST['repeatNewPassword']);
+                        $sql = "UPDATE UserDetails SET passHash = ? WHERE `email`= ?;";
+
+                        if ($stmtUpdate = $this->conn->prepare($sql)) {
+                            $this->newPassHash = password_hash($_POST['newPassword'], PASSWORD_DEFAULT);
+                            $stmtUpdate->bind_param("ss",$this->newPassHash, $retEmail);
+                            $stmtUpdate->execute();
+                            $stmtUpdate->close();
+                            header("Location: index.php");
+                        }
+                    } else {
+                        echo "<h1>Expired Token/Invalid Reset Link, Please Try again.</h1>";
+                        exit();
+                    }
+                }
+                $stmt->close();
+            }
+        }
+    }
 }
 
 // userID (PK), username, passwordHASH, pathToUserFiles
