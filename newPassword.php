@@ -1,40 +1,45 @@
 <?php
 
-require("oopGenPage.php");
+require_once("oopGenPage.php");
+require_once('createDatabase.php');
 
+if (isset($_GET['selector'])&&isset($_GET['validator'])){
 
-$bodyContent=<<<BODY
-<div class="newPasswordForm">
-  <div class="container">
-    <?php
-    #This is to ensure no one can mess with the tokens in the URL
-    $selector = $_GET["selector"];
-    $validator = $_GET["validator"];
-
-    if (empty($selector) || empty($validator)) {
-        echo "Request cannot be Validated.";
-    } else {
-        if (ctype_xdigit($selector) !== false && ctype_xdigit($validator) !== false) {
-            ?>
-            <form action="resetRequest.php" method="post">
-                <input type="hidden" name="selector" value="<?php echo $selector?>">
-                <input type="hidden" name="validator" value="<?php echo $validator?>">
-                <input type="password" name="newPassword" placeholder="Enter New Password">
-                <input type="password" name="repeatNewPassword" placeholder="Confirm New Password">
-                <button type="submit" name="submitNewPassword">Reset Password</button>
-            </form>
-            <?php
-
-            ?>
-        }
+    session_start();
+    $time = time();
+    if (isset($_SESSION['discard']) && $time > $_SESSION['discard']) {
+        session_unset();
+        session_destroy();
+        session_start();
+        header("Location: index.php");
     }
+    $_SESSION['discard'] = $time + 3600;
 
-  </div>
-</div>
-BODY;
+    $_DBconnection=new DBConnection();
 
-$page=new HTMLPage($title,$cssPath);
-$page->setBodyContent($bodyContent);
-$page->render();
+    $bodyContent=<<<BODY
+    <div class="newPasswordForm">
+      
+      <form action="{$_DBconnection->retreivePassRequest($_GET['selector'],$_GET['validator'])}" method="POST" style="border:1px solid #ccc">
+      <div class="container">
+      <h1>Password Reset</h1>
+    <p>Please fill in this form to Reset your password.</p>
+    <hr>
+                    <input type="password" name="newPassword" placeholder="Enter New Password">
+                    <input type="password" name="repeatNewPassword" placeholder="Confirm New Password">
+                    <button type="submit" name="submitNewPassword">Reset Password</button>
+                </form>
+      </div>
+    </div>
+    BODY;
 
+    $title="Reset Password";
+    $cssPath="/resources/resetPass.css";
+    $page=new HTMLPage($title,$cssPath);
+    $page->setBodyContent($bodyContent);
+    $page->render();
+}
+else{
+    header("Location: index.php");
+}
 ?>
