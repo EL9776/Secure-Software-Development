@@ -62,6 +62,9 @@ if (isset($_GET['success'])){
     else if ($_GET['success']=="timeout"){
         echo "<h3 style='color: green; text-align:center'>Session Timed Out!</h3>";
     }
+    else if ($_GET['success']=="sent"){
+        echo "<h3 style='color: green; text-align:center'>Check your email!</h3>";
+    }
 }
 
 $page->render();
