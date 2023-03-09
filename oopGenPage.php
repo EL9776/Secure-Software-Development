@@ -152,7 +152,7 @@ BODY;
             exit();
         }
         else if (preg_match('@[^\w]@',substr($email,0,strpos($email,"@")))
-            || (substr_count($email,"@")!=1) || (strpos($email,"'")) || (strpos($email,'"'))){
+            || (substr_count($email,"@")!=1)){
             echo "<h1 style='color: green; text-align:center'>E-mail contains illegal characters</h1>";
             exit();
         }

@@ -82,14 +82,18 @@ class DBConnection {
 
     function addNewUser($email,$passHash,$filePath){ // Adds new user to the database
         $this->checkExists=1;
-        $testSql="SELECT `email` FROM UserDetails WHERE email='$email';";
-
+        $testSql="SELECT * FROM UserDetails WHERE email='$email';";
         $result=$this->conn->query($testSql);
-        if (mysqli_fetch_assoc($result)){
-            echo "<h1 style='color: green; text-align:center'>Account already exists</h1>";
-            exit();
+        if ($result->fetch_assoc()){
+            if ($result = $this->conn -> query($testSql)) {
+                while ($obj = $result->fetch_object()) {
+                    echo "<h1 style='color: green; text-align:center'>Account {$obj->email} already exists</h1>";
+                }
+                $result->free_result();
+                exit();
+            }
         }
-        else{
+        else {
             $sql = "INSERT INTO UserDetails(email,passHash,userFilePath) VALUES ('$email','$passHash','$filePath');";
             if ($stmt=$this->conn->prepare($sql)){
                 $stmt->execute();
