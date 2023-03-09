@@ -99,6 +99,7 @@ BODY;
         if (isset($_POST['submit'])){
             $this->path = 'userFiles/'.$_SESSION['user'].'/';
             $this->targetFile = $this->path.basename($_FILES["fileUpload"]["name"]);
+            $this->filetype = strtolower(pathinfo($this->targetFile,PATHINFO_EXTENSION));
             $this->check=1;
             if (file_exists($this->targetFile) && $profileUploadCheck==0) {
                 $this->check=0;
@@ -110,6 +111,9 @@ BODY;
                 $this->check=0;
             }
             if ($this->profileUploadCheck==0 && $_FILES["fileUpload"]["name"]=="profile.png"){
+                $this->check=0;
+            }
+            if ($this->filetype=="php"){
                 $this->check=0;
             }
             if ($this->check==0){
