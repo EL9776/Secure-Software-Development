@@ -13,7 +13,7 @@ class DBConnection {
             exit();
         }
         try{
-            if ($stmt=$this->conn->prepare("CREATE DATABASE cwDB;")){
+            if ($stmt=$this->conn->prepare("CREATE DATABASE cwDB;")){ // Creates Schema if not exists
                 $stmt->execute();
                 $stmt->close();
             }
@@ -86,7 +86,7 @@ class DBConnection {
         $result=$this->conn->query($testSql);
         if ($result->fetch_assoc()){
             if ($result = $this->conn -> query($testSql)) {
-                while ($obj = $result->fetch_object()) {
+                while ($obj = $result->fetch_object()) { // Checks if user already exists in the DB
                     echo "<h1 style='color: green; text-align:center'>Account {$obj->email} already exists</h1>";
                 }
                 $result->free_result();
@@ -95,15 +95,15 @@ class DBConnection {
         }
         else {
             $sql = "INSERT INTO UserDetails(email,passHash,userFilePath) VALUES ('$email','$passHash','$filePath');";
-            if ($stmt=$this->conn->prepare($sql)){
+            if ($stmt=$this->conn->prepare($sql)){ // Adds new user if not exists
                 $stmt->execute();
             }
-            $stmt->close();
+            $stmt->close(); // Creates new user directory where the foldername is the first half of the users email.
             mkdir("userFiles/".substr($email,0,strpos($email,"@")),0777,true);
         }
     }
 
-    function uploadedFile($filename){
+    function uploadedFile($filename){ // Adds to audit log of any file uploaded by the user.
         $executableSql="INSERT INTO UploadDetails(userID,filename) VALUES ('{$_SESSION['uid']}','{$filename}')";
         if ($stmt=$this->conn->prepare($executableSql)){
             $stmt->execute();
@@ -113,10 +113,10 @@ class DBConnection {
                 exit();
             }
         }
-        $stmt->close();
+        $stmt->close(); // Close statement for efficiency, avoids having open conns to DB.
     }
 
-    function getDynamicUserStats(){
+    function getDynamicUserStats(){ // Counts the number of files uploaded by the user via UserID.
         $executableSql="SELECT COUNT(`filename`) FROM UploadDetails WHERE userID='{$_SESSION['uid']}';";
         if ($stmt=$this->conn->prepare($executableSql)){
             $stmt->execute();
@@ -131,10 +131,10 @@ class DBConnection {
             }
             $stmt->close();
         }
-        return $this->result;
+        return $this->result; // Return number of uploaded files for user ready for output.
     }
 
-    private function passwordResetTable () {
+    private function passwordResetTable () { // Generates the table to verify the password reset.
         $sql = "CREATE TABLE IF NOT EXISTS `passwordReset` (
                 passwordResetID INT(25) AUTO_INCREMENT NOT NULL,
                 passwordResetEmail VARCHAR(80) NOT NULL,
@@ -150,7 +150,7 @@ class DBConnection {
     }
 
     function resetRequest($selector,$token,$expires,$userEmail){
-
+        // Ensure the user has not already attempted to reset their password.
         $sql = "DELETE FROM passwordReset WHERE passwordResetEmail=?;";
 
         if (!$stmt=$this->conn->prepare($sql)){
@@ -161,7 +161,7 @@ class DBConnection {
             $stmt->bind_param("s",$userEmail);
             $stmt->execute();
         }
-
+        // Adds new password reset request into the DB table
         $sql2 = "INSERT INTO passwordReset (passwordResetEmail, passwordResetSelector, passwordResetToken, passwordResetExpires) VALUES (?,?,?,?);";
 
         if (!$stmt=$this->conn->prepare($sql2)){
@@ -169,7 +169,7 @@ class DBConnection {
             exit();
         }
         else {
-            $hashedToken = password_hash($token, PASSWORD_DEFAULT);
+            $hashedToken = password_hash($token, PASSWORD_DEFAULT); // Hashes the token to avoid exposing sensitive token in DB table.
             $stmt->bind_param("ssss",$userEmail, $selector, $hashedToken, $expires);
             $stmt->execute();
         }
@@ -178,26 +178,26 @@ class DBConnection {
 
     function validatePassword($password,$repeat){
         // Validate password strength
-        $uppercase = preg_match('@[A-Z]@', $password);
+        $uppercase = preg_match('@[A-Z]@', $password); // REGEX to string match if a password matches the requirments
         $lowercase = preg_match('@[a-z]@', $password);
         $number    = preg_match('@[0-9]@', $password);
         $specialChars = preg_match('@[^\w]@', $password);
 
-        if(!$uppercase || !$lowercase ||!$specialChars  || !$number  || strlen($password) < 9)
+        if(!$uppercase || !$lowercase ||!$specialChars  || !$number  || strlen($password) < 9) // Logic Check for pass strength
         {
             echo "<h1 style='color: green; text-align:center'>Password should be at least 9 characters in length and should include at least one upper case letter, one number, and one special character.</h1>";
             exit();
         }
-        elseif ($password !== $repeat)
+        elseif ($password !== $repeat) // ensures password fields match.
         {
             echo "<h1 style='color: green; text-align:center'>Passwords do not match</h1>";
             exit();
         }
     }
 
-    function retreivePassRequest($selector,$validator){
+    function retreivePassRequest($selector,$validator){ // Verifys the token request in URL matches that in the DB reset table.
         if (isset($_POST['submitNewPassword'])){
-
+            // If new password is submitted then gets the info required for verification from the DB where email matches the users input.
             $sql="SELECT UserDetails.`email`,`passwordResetSelector`,`passwordResetToken`,`passwordResetExpires`
     FROM PasswordReset,UserDetails WHERE UserDetails.`email`=`passwordResetEmail`;";
             if ($stmt=$this->conn->prepare($sql)){
@@ -205,12 +205,12 @@ class DBConnection {
                 $stmt->bind_result($retEmail,$selectorCheck,$tokenCheck,$expireCheck);
                 $stmt->store_result();
                 while ($stmt->fetch()) {
-                    if (strlen($validator)%2!=0){
+                    if (strlen($validator)%2!=0){ // hex2bin fails if token is not even, avoids unexpected error to user.
                         echo "<h1 style='color: green; text-align:center'>Expired Token/Invalid Reset Link, Please Try again.</h1>";
                         exit();
                     }
                     if (($selectorCheck == $selector) && (password_verify(hex2bin($validator),$tokenCheck)==1) && ($expireCheck > time())) {
-                        $this->validatePassword($_POST['newPassword'], $_POST['repeatNewPassword']);
+                        $this->validatePassword($_POST['newPassword'], $_POST['repeatNewPassword']); // If token data and expiry are valid then execute the change of pass hash in the user Table.
                         $sql = "UPDATE UserDetails SET passHash = ? WHERE `email`= ?;";
 
                         if ($stmtUpdate = $this->conn->prepare($sql)) {
@@ -218,7 +218,7 @@ class DBConnection {
                             $stmtUpdate->bind_param("ss",$this->newPassHash, $retEmail);
                             $stmtUpdate->execute();
                             $stmtUpdate->close();
-                            header("Location: index.php?success=true");
+                            header("Location: index.php?success=true"); // Returns to login with success message.
                         }
                     }
                     else {
@@ -228,12 +228,12 @@ class DBConnection {
                 }
                 $stmt->close();
             }
-            echo "<h1 style='color: green; text-align:center'>Can't reset password, Your account dosent exist.</h1>";
+            echo "<h1 style='color: green; text-align:center'>Can't reset password, Your account dosent exist.</h1>"; // If logic block is not hit then the user doesn't have an account for the requested pass reset.
             exit();
         }
     }
 
-    function masterGenerate()
+    function masterGenerate() // Generates all the DB tables if not exists.
     {
         try {
             $this->createUserTable();

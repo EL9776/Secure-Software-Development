@@ -5,15 +5,15 @@ require_once("oopGenPage.php");
 session_start();
 $time = time();
 if (isset($_SESSION['discard']) && $time > $_SESSION['discard']) {
-    session_unset();
+    session_unset(); // Destuct session if been inactive for 1 hour or more.
     session_destroy();
     session_start();
-    header("Location: index.php?success=timeout");
+    header("Location: index.php?success=timeout"); // Redirect with custom message.
 }
 $_SESSION['discard'] = $time + 3600;
 
 
-$title="Signup Page";
+$title="Signup Page"; // Set OOP Page content
 $cssPath="/resources/signup.css";
 $bodyContent=<<<BODY
 <div class="signupForm">
@@ -42,6 +42,6 @@ BODY;
 
 $page=new HTMLPage($title,$cssPath);
 $page->setBodyContent($bodyContent);
-$page->render();
+$page->render(); // Echo page obj to the browser.
 
 ?>

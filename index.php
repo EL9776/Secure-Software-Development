@@ -6,14 +6,14 @@ require_once('createDatabase.php');
 session_start();
 $time = time();
 if (isset($_SESSION['discard']) && $time > $_SESSION['discard']) {
-    session_unset();
+    session_unset(); // Ensures session is destroyed after 1 hour (3600s)
     session_destroy();
     session_start();
-    header("Location: index.php?success=timeout");
+    header("Location: index.php?success=timeout"); // Redirect to index.php with custom message.
 }
 $_SESSION['discard'] = $time + 3600;
 
-$title="SSD Cloud";
+$title="SSD Cloud"; // Setting OOP Content for Page Obj.
 $cssPath="/resources/master.css";
 $bodyContent=<<<MASTER
 <h1>SSD Cloud Login</h1>
@@ -48,7 +48,7 @@ $page->setBodyContent($bodyContent);
 
 $_DBConnection=new DBConnection();
 $_DBConnection->masterGenerate();
-
+// Custom $_GET Error messages, echos set string instead of the variable to avoid XSS exploitation.
 if (isset($_GET['success'])){
     if ($_GET['success']=="true"){
         echo "<h3 style='color: green; text-align:center'>Password Successfully Reset!</h3>";
@@ -67,6 +67,6 @@ if (isset($_GET['success'])){
     }
 }
 
-$page->render();
+$page->render(); // Echos the Page obj to browser.
 
 ?>
