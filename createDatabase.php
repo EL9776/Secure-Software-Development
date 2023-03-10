@@ -82,7 +82,9 @@ class DBConnection {
 
     function addNewUser($email,$passHash,$filePath){ // Adds new user to the database
         $this->checkExists=1;
+        $checkFolderCreate=substr($email,0,strpos($email,"@"));
         $testSql="SELECT * FROM UserDetails WHERE email='$email';";
+        $testSql2="SELECT * FROM UserDetails WHERE UserDetails.email LIKE '{$checkFolderCreate}%';";
         $result=$this->conn->query($testSql);
         if ($result->fetch_assoc()){
             if ($result = $this->conn -> query($testSql)) {
@@ -91,6 +93,18 @@ class DBConnection {
                 }
                 $result->free_result();
                 exit();
+            }
+        }
+        $result=$this->conn->query($testSql2);
+        if ($result->fetch_assoc()){
+            if ($result = $this->conn -> query($testSql2)) {
+                while ($obj = $result->fetch_object()) { // Checking if the user folder path create exists
+                    if ($checkFolderCreate==substr($email,0,strpos($obj->email,"@"))){
+                        echo "<h1 style='color: green; text-align:center'>Please Try a new Email</h1>";
+                        exit(); // exit if user folder path already exists and can't be created
+                    }
+                }
+                $result->free_result();
             }
         }
         else {

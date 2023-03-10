@@ -18,6 +18,7 @@ $validateObject=new HTMLPage("Validate",""); // HTMLPage obj purely for validati
 $email = $_POST['email'];
 $password = $_POST['psw'];
 $repeat = $_POST['psw-repeat'];
+$email = preg_replace('/\s+/', '', $email);
 
 $validateObject->validateEmail($email); // Validate email & pass are safe and match requirements.
 $validateObject->validatePassword($password,$repeat);
