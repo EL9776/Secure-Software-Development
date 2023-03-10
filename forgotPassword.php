@@ -5,14 +5,14 @@ require_once("oopGenPage.php");
 session_start();
 $time = time();
 if (isset($_SESSION['discard']) && $time > $_SESSION['discard']) {
-    session_unset();
+    session_unset(); // Logic to ensure session is destroyed after an hour
     session_destroy();
     session_start();
     header("Location: index.php?success=timeout");
 }
 $_SESSION['discard'] = $time + 3600;
 
-$title="Forgot Password Page";
+$title="Forgot Password Page"; // Setting OOP Page Obj content.
 $cssPath="resources/forgotPassword.css";
 $bodyContent=<<<BODY
 
@@ -34,6 +34,6 @@ BODY;
 
 $page=new HTMLPage($title,$cssPath);
 $page->setBodyContent($bodyContent);
-$page->render();
+$page->render(); // Echos HTMLpage to browser.
 
 ?>

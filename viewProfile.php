@@ -5,21 +5,21 @@ include_once('oopGenPage.php');
 session_start();
 $time = time();
 if (isset($_SESSION['discard']) && $time > $_SESSION['discard']) {
-    session_unset();
+    session_unset(); // Destruct after 1h of inactivity.
     session_destroy();
     session_start();
-    header("Location: index.php?success=timeout");
+    header("Location: index.php?success=timeout"); // Redirect with custom message.
 }
 $_SESSION['discard'] = $time + 3600;
 
-if (!isset($_SESSION['user'])){
+if (!isset($_SESSION['user'])){ // if not authenticated then dont allow access to this page.
     header("Location: index.php");
 }
 
-$title="Profile";
+$title="Profile"; // set content for the page obj
 $cssPath="/resources/profile.css";
 $page=new HTMLPage($title,$cssPath);
-
+// body content contains standard layout alongside logout button, dynamic profile icon, dynamic stats, profile icon upload and custom error.
 $bodyContent=<<<BODY
 <div class="profileTitle">
 <h1>Your Profile</h1>
@@ -51,6 +51,6 @@ $bodyContent=<<<BODY
 BODY;
 
 $page->setBodyContent($bodyContent);
-$page->render();
+$page->render(); // Echo page obj content to the browser.
 
 ?>
