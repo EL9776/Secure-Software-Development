@@ -3,7 +3,18 @@
 require_once("oopGenPage.php");
 
 session_start();
+$time = time();
+if (isset($_SESSION['discard']) && $time > $_SESSION['discard']) {
+    session_unset(); // Self-Destructs session when its been longer than 1h of inactivity
+    session_destroy();
+    session_start();
+    header("Location: index.php?success=timeout"); //Redirects to the login page
+}
+$_SESSION['discard'] = $time + 3600; // Allocates a 1 hour sesion on page load
 
+if (!isset($_SESSION['user'])){             // If session is not set
+    header("Location: index.php"); // and the page is force loaded server redirects straight back to login page
+}
 
 $title="Signup Page";
 $cssPath="/resources/cloud.css";
