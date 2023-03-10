@@ -19,8 +19,7 @@ $email = $_POST['email'];
 $password = $_POST['psw'];
 $repeat = $_POST['psw-repeat'];
 
-$validateObject->validateEmail($email);
-$validateObject->validatePassword($password,$repeat);
+
 
 $hash = password_hash($password, PASSWORD_DEFAULT);
 
