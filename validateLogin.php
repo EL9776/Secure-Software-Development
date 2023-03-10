@@ -19,7 +19,7 @@ $password = $_POST['psw'];
 
 $validateObject=new HTMLPage("Validate","");
 
-
+$validateObject->validateEmail($email);
 
 $_DBConnection=new DBConnection();
 $_DBConnection->masterGenerate();

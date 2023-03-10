@@ -135,14 +135,52 @@ BODY;
         }
     }
 
+    function validateEmail($email){
 
+        if (strlen($email)<1 )
+        {
+            echo "<h1 style='color: green; text-align:center'>Email length too short</h1>";
+            exit();
+        }
+        else if (strlen($email)>100){
+            echo "<h1 style='color: green; text-align:center'>Email length too long</h1>";
+            exit();
+        }
+        else if (!strpos($email, '@'))
+        {
+            echo "<h1 style='color: green; text-align:center'>Email Invalid</h1>";
+            exit();
+        }
+        else if (preg_match('@[^\w]@',substr($email,0,strpos($email,"@")))
+            || (substr_count($email,"@")!=1)){
+            echo "<h1 style='color: green; text-align:center'>E-mail contains illegal characters</h1>";
+            exit();
+        }
+    }
 
     function dynamicUserStats(){
         $this->dynamicStats=$this->dBObj->getDynamicUserStats();
         return $this->dynamicStats;
     }
 
+    function validatePassword($password,$repeat){
+        // Validate password strength
+        $uppercase = preg_match('@[A-Z]@', $password);
+        $lowercase = preg_match('@[a-z]@', $password);
+        $number    = preg_match('@[0-9]@', $password);
+        $specialChars = preg_match('@[^\w]@', $password);
 
+        if(!$uppercase || !$lowercase ||!$specialChars  || !$number  || strlen($password) < 9)
+        {
+            echo "<h1 style='color: green; text-align:center'>Password should be at least 9 characters in length and should include at least one upper case letter, one number, and one special character.</h1>";
+            exit();
+        }
+        elseif ($password !== $repeat)
+        {
+            echo "<h1 style='color: green; text-align:center'>Passwords do not match</h1>";
+            exit();
+        }
+    }
 
     function userProfileIcon(){
         $this->checkPath=$_SERVER['DOCUMENT_ROOT']."/userFiles/".$_SESSION['user']."/profile.png";
